@@ -1,0 +1,71 @@
+apiVersion: apps.openshift.io/v1
+kind: DeploymentConfig
+metadata:
+  name: numalogic-redis
+spec:
+  replicas: 1
+  selector:
+    name: numalogic-redis
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        name: numalogic-redis
+    spec:
+      containers:
+        - resources:
+            limits:
+              memory: 512Mi
+          readinessProbe:
+            exec:
+              command:
+                - /bin/sh
+                - '-i'
+                - '-c'
+                - >-
+                  test "$(redis-cli -h 127.0.0.1 -a $REDIS_PASSWORD ping)"
+                  == "PONG"
+            initialDelaySeconds: 5
+            timeoutSeconds: 1
+          terminationMessagePath: /dev/termination-log
+          name: redis
+          livenessProbe:
+            initialDelaySeconds: 30
+            tcpSocket:
+              port: 6379
+            timeoutSeconds: 1
+          env:
+            - name: REDIS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  key: redis-password
+                  name: numalogic-redis-cluster
+          securityContext:
+            privileged: false
+          ports:
+            - containerPort: 6379
+              protocol: TCP
+          imagePullPolicy: IfNotPresent
+          volumeMounts:
+            - mountPath: /var/lib/redis/data
+              name: numalogic-redis-data
+          image: ' '
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      volumes:
+        - name: numalogic-redis-data
+          persistentVolumeClaim:
+            claimName: numalogic-redis
+  triggers:
+    - imageChangeParams:
+        automatic: true
+        containerNames:
+          - redis
+        from:
+          kind: ImageStreamTag
+          name: redis:6-el8
+          namespace: openshift
+        lastTriggeredImage: ''
+      type: ImageChange
+    - type: ConfigChange

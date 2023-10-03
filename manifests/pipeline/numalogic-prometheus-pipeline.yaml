@@ -19,7 +19,7 @@ spec:
       udf:
         container:
           image: quay.io/numaio/numalogic-prometheus/udf/prometheus-serde:v0.1.5
-        env:
+          env:
           - name: NUMAFLOW_DEBUG
             value: "true"
     - name: filter

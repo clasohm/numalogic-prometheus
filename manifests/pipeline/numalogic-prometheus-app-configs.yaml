@@ -1,7 +1,7 @@
 kind: ConfigMap
 apiVersion: v1
 metadata:
-  name: numalogic-prometheus-default-configs
+  name: numalogic-prometheus-app-configs
 data:
   config.yaml: |
     configs:

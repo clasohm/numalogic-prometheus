@@ -1,0 +1,8 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: numalogic-prometheus
+resources:
+  - numalogic-redis-pvc.yaml
+  - numalogic-redis-dc.yaml
+  - numalogic-redis-cluster-secret.yaml
+  - numalogic-redis-cluster-service.yaml

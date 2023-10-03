@@ -1,0 +1,16 @@
+kind: Route
+apiVersion: route.openshift.io/v1
+metadata:
+  name: numaflow-server
+  namespace: numaflow-system
+spec:
+  to:
+    kind: Service
+    name: numaflow-server
+    weight: 100
+  port:
+    targetPort: 8443
+  tls:
+    termination: passthrough
+    insecureEdgeTerminationPolicy: None
+  wildcardPolicy: None
